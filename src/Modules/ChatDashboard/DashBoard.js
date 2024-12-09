@@ -17,7 +17,7 @@ const Index = () => {
     navigate(`/chat?userName=${userName}&socketId=${socketRef.current.id}`);
   };
   useEffect(() => {
-    socketRef.current = io.connect("http://198.162.29.24:5000");
+    socketRef.current = io.connect("http://54.89.60.230:5000");
     socketRef.current.on("connect", () => {
       socketRef.current.emit("join", "mad");
       socketRef.current.emit("userDetails", {
