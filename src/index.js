@@ -34,20 +34,20 @@ const SuspenseCall = (props) => (
   <Suspense fallback={"loading"}>{props.children}</Suspense>
 );
 
+const DashBoardPageCompound = () => (
+  <SuspenseCall>
+    <DashBoardPage />
+  </SuspenseCall>
+);
+
 const ChatNavigation = () => {
   const socketRef = useRef();
   return (
     <SocketContext.Provider value={{ socketRef }}>
       <Router>
         <Routes>
-          <Route
-            path="/:userName"
-            element={
-              <SuspenseCall>
-                <DashBoardPage />
-              </SuspenseCall>
-            }
-          />
+          <Route path="/:userName" element={<DashBoardPageCompound />} />
+          <Route path="/" element={<DashBoardPageCompound />} />
           <Route
             path="/chat"
             element={
