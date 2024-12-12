@@ -9,19 +9,21 @@ import { SocketContext } from "../..";
 
 const Index = () => {
   const [fulScreen, setFullScreen] = useState(false);
-  const { userName } = useParams() || "Joker";
+  const { userName } = useParams();
   const navigate = useNavigate();
   const { socketRef } = useContext(SocketContext);
 
   const goToChat = () => {
-    navigate(`/chat?userName=${userName}&socketId=${socketRef.current.id}`);
+    navigate(
+      `/chat?userName=${userName || "Joker"}&socketId=${socketRef.current.id}`
+    );
   };
   useEffect(() => {
     socketRef.current = io.connect("http://54.89.60.230:5000");
     socketRef.current.on("connect", () => {
       socketRef.current.emit("join", "mad");
       socketRef.current.emit("userDetails", {
-        userName,
+        userName: userName || "Joker",
         userId: socketRef.current.id,
         roomId: "mad",
       });
