@@ -1,55 +1,24 @@
-import React, { useRef } from "react";
-import { lazy, Suspense } from "react";
+import React, { createContext, useState } from "react";
+import { lazy } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import "bootstrap/scss/bootstrap.scss";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { createContext } from "react";
+import { fromJS } from "immutable";
+import { preLoadedMessages } from "./StaticAssets/data";
+import { SuspenseCall } from "./Utiles/ReactUtile";
 
-export const SocketContext = createContext();
-
-const DashBoardPage = lazy(() =>
-  import("./Modules/ChatDashboard/DashBoard.js").then((module) => {
-    if ("caches" in window) {
-      caches.open("react-lazy-cache").then((cache) => {
-        cache.add(module);
-      });
-    }
-    return module;
-  })
-);
-
-const ChatMessage = lazy(() =>
-  import("./Modules/ChatMessage/Message.js").then((module) => {
-    if ("caches" in window) {
-      caches.open("react-lazy-cache").then((cache) => {
-        cache.add(module);
-      });
-    }
-    return module;
-  })
-);
-
-const SuspenseCall = (props) => (
-  <Suspense fallback={"loading"}>{props.children}</Suspense>
-);
-
-const DashBoardPageCompound = () => (
-  <SuspenseCall>
-    <DashBoardPage />
-  </SuspenseCall>
-);
+export const MessageContext = createContext();
+const ChatMessage = lazy(() => import("./Dashboard/index"));
 
 const ChatNavigation = () => {
-  const socketRef = useRef();
+  const [gobalMessages, setGobalMessages] = useState(fromJS(preLoadedMessages));
   return (
-    <SocketContext.Provider value={{ socketRef }}>
+    <MessageContext.Provider value={{ gobalMessages, setGobalMessages }}>
       <Router>
         <Routes>
-          <Route path="/:userName" element={<DashBoardPageCompound />} />
-          <Route path="/" element={<DashBoardPageCompound />} />
           <Route
-            path="/chat"
+            path="/"
             element={
               <SuspenseCall>
                 <ChatMessage />
@@ -58,7 +27,7 @@ const ChatNavigation = () => {
           />
         </Routes>
       </Router>
-    </SocketContext.Provider>
+    </MessageContext.Provider>
   );
 };
 
